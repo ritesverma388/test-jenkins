@@ -1,0 +1,25 @@
+node{
+   stage('SCM Checkout'){
+       git 'https://github.com/javahometech/my-app'
+   }
+   
+   stage('Mvn Package'){
+     def mvnHome = tool name: 'maven-3', type: 'maven'
+     def mvnCMD = "${mvnHome}/bin/mvn"
+     sh "${mvnCMD} clean package"
+   }
+   
+      stage('Build Docker Image'){
+     sh 'docker build -t rittddz388/my-app:2.0.0 .'
+   }
+   
+   stage('Push Docker Image'){
+     withCredentials([string(credentialsId: 'docpwd', variable: 'dockerhubpass')]) {
+        sh 'docker login -u rittddz388 -p ritesh388'
+     }
+     sh 'docker push rittddz388/my-app:2.0.0'
+   }
+      stage('Run Container on slave-node'){
+       sh 'docker run -p 8888:8080 -d --name my-app rittddz388/my-app:2.0.0'
+     }
+}
