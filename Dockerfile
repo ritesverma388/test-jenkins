@@ -1,5 +1,6 @@
-from openjdk:8
-copy . /src/java
-workdir /src/java
-run ["javac", "hello.java"]
-entrypoint ["java", "HelloWorld"]
+FROM tomcat:8
+LABEL app=my-app
+COPY target/*.war /usr/local/tomcat/webapps/myweb.war
+EXPOSE 8080
+CMD ["/usr/local/tomcat/bin/catalina.sh", "run"]
+#test
